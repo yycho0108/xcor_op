@@ -23,7 +23,7 @@ C = 1024
 d = 5 # D == 2*d+1!
 
 def stat(x):
-    print(x.shape)
+    print('shape', x.shape)
     s = x.mean(), x.max(), x.min(), x.sum()
     print('(mean, max, min, sum)', s)
     return s
@@ -59,12 +59,14 @@ with tf.Session(config=config) as sess:
         xc = sess.run(xcor_c, {img_a_c:img_a_np, img_b_c:img_b_np})
         xg = sess.run(xcor_g, {img_a_g:img_a_np, img_b_g:img_b_np})
 
-    with Timer('c'):
+    print('======================================')
+
+    with Timer('cpu-mine'):
         xc = sess.run(xcor_c, {img_a_c:img_a_np, img_b_c:img_b_np})
-    with Timer('g'):
+    with Timer('gpu-mine'):
         for _ in range(n_repeat):
             xg = sess.run(xcor_g, {img_a_g:img_a_np, img_b_g:img_b_np})
-    with Timer('g-def'):
+    with Timer('gpu-reference'):
         for _ in range(n_repeat):
             xg2 = sess.run(xcor_g_gt, {img_a_g:img_a_np, img_b_g:img_b_np})
 
@@ -78,3 +80,4 @@ with tf.Session(config=config) as sess:
     xg2_s = stat(xg2)
 
     print(np.divide(xg_s, xg2_s))
+    print('======================================')
